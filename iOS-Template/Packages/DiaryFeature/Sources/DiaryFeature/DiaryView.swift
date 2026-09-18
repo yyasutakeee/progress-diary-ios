@@ -97,7 +97,7 @@ public struct DiaryView<Model: DiaryViewModel>: View {
             }
         }
         .listStyle(.plain)
-        .modifier(TopScrollEdgeEffectModifier())
+        .modifier(TopListBoundaryBlurModifier())
     }
 
     private var listMenu: some ToolbarContent {
@@ -247,13 +247,22 @@ public struct DiaryView<Model: DiaryViewModel>: View {
     }
 }
 
-private struct TopScrollEdgeEffectModifier: ViewModifier {
-    @ViewBuilder
+private struct TopListBoundaryBlurModifier: ViewModifier {
+    private let blurHeight: CGFloat = 24
+
     func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            content.scrollEdgeEffectStyle(.soft, for: .top)
-        } else {
-            content
+        content.overlay(alignment: .top) {
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .mask {
+                    LinearGradient(
+                        colors: [.black, .clear],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                }
+                .frame(height: blurHeight)
+                .allowsHitTesting(false)
         }
     }
 }
