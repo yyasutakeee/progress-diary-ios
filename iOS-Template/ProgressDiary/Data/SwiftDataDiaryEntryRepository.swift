@@ -4,10 +4,10 @@ import Foundation
 
 @Model
 final class DiaryEntryRecord {
-    var id: UUID
+    var id: UUID = UUID()
     var listID: UUID?
-    var text: String
-    var createdAt: Date
+    var text: String = ""
+    var createdAt: Date = Date()
 
     // WHY: initializes new records with stable identity and creation time before SwiftData inserts them.
     init(text: String) {
@@ -20,11 +20,11 @@ final class DiaryEntryRecord {
 
 @Model
 final class DiaryListRecord {
-    var id: UUID
-    var name: String
+    var id: UUID = UUID()
+    var name: String = ""
     var heatmapColorID: String?
     var isStreakEnabled: Bool?
-    var createdAt: Date
+    var createdAt: Date = Date()
 
     // WHY: gives each persisted list its own identity so pages can remain selected across state updates.
     init(name: String) {
