@@ -97,6 +97,7 @@ public struct DiaryView<Model: DiaryViewModel>: View {
             }
         }
         .listStyle(.plain)
+        .modifier(TopScrollEdgeEffectModifier())
     }
 
     private var listMenu: some ToolbarContent {
@@ -243,6 +244,17 @@ public struct DiaryView<Model: DiaryViewModel>: View {
         let roundedDescriptor: UIFontDescriptor = baseFont.fontDescriptor.withDesign(.rounded) ?? baseFont.fontDescriptor
         let roundedFont: UIFont = UIFont(descriptor: roundedDescriptor, size: size)
         return UIFontMetrics(forTextStyle: textStyle).scaledFont(for: roundedFont)
+    }
+}
+
+private struct TopScrollEdgeEffectModifier: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.scrollEdgeEffectStyle(.soft, for: .top)
+        } else {
+            content
+        }
     }
 }
 
