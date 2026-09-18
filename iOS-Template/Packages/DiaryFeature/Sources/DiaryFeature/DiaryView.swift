@@ -97,7 +97,7 @@ public struct DiaryView<Model: DiaryViewModel>: View {
             }
         }
         .listStyle(.plain)
-        .modifier(TopListBoundaryBlurModifier())
+        .modifier(TopListBoundaryFadeModifier())
     }
 
     private var listMenu: some ToolbarContent {
@@ -247,21 +247,17 @@ public struct DiaryView<Model: DiaryViewModel>: View {
     }
 }
 
-private struct TopListBoundaryBlurModifier: ViewModifier {
-    private let blurHeight: CGFloat = 24
+private struct TopListBoundaryFadeModifier: ViewModifier {
+    private let fadeHeight: CGFloat = 24
 
     func body(content: Content) -> some View {
         content.overlay(alignment: .top) {
-            Rectangle()
-                .fill(.ultraThinMaterial)
-                .mask {
-                    LinearGradient(
-                        colors: [.black, .clear],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                }
-                .frame(height: blurHeight)
+            LinearGradient(
+                colors: [Color(.systemBackground), Color(.systemBackground).opacity(0)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+                .frame(height: fadeHeight)
                 .allowsHitTesting(false)
         }
     }
