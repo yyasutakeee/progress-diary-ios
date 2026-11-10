@@ -83,6 +83,8 @@ final class DiaryViewStore: DiaryViewModel {
         case .listSettingsTapped(let id):
             editingListID = id
             isShowingListSettings = true
+        case .listRenamed(let name):
+            renameEditingList(to: name)
         case .heatmapColorSelected(let colorID):
             guard let editingListID else { return }
             appStore.updateListHeatmapColor(listID: editingListID, colorID: colorID)
@@ -199,6 +201,16 @@ final class DiaryViewStore: DiaryViewModel {
         case .dailyActivity: return .heatmap
         case .monthlyCumulativeTotal: return .cumulativeBars
         }
+    }
+
+    // WHY: blank or unchanged names are ignored so dismissing the settings sheet never erases or rewrites a list name.
+    private func renameEditingList(to name: String) {
+        let trimmedName: String = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let editingListID,
+              !trimmedName.isEmpty,
+              let list: DiaryList = appStore.state.lists.first(where: { $0.id == editingListID }),
+              list.name != trimmedName else { return }
+        appStore.renameList(listID: editingListID, name: trimmedName)
     }
 
     // WHY: resolves the domain entry by id before deletion so the view layer

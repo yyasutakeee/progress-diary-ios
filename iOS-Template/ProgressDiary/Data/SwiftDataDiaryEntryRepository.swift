@@ -106,6 +106,15 @@ final class SwiftDataDiaryEntryRepository: DiaryEntryRepository {
         loadAndPublishEntries()
     }
 
+    // WHY: updates only the name so a rename keeps the list's identity, entries, and settings intact.
+    func updateListName(listID: UUID, name: String) {
+        let descriptor: FetchDescriptor<DiaryListRecord> = FetchDescriptor<DiaryListRecord>(predicate: #Predicate { $0.id == listID })
+        guard let record: DiaryListRecord = try? modelContext.fetch(descriptor).first else { return }
+        record.name = name
+        saveContext()
+        loadAndPublishLists()
+    }
+
     // WHY: persists a list's visual identity separately so changing a color never touches its entries.
     func updateListHeatmapColor(listID: UUID, colorID: String) {
         let descriptor: FetchDescriptor<DiaryListRecord> = FetchDescriptor<DiaryListRecord>(

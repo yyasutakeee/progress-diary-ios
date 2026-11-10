@@ -8,6 +8,7 @@ protocol DiaryEntryRepository {
     func deleteEntry(_ entry: DiaryEntry)
     func addList(name: String)
     func deleteList(_ list: DiaryList)
+    func updateListName(listID: UUID, name: String)
     func updateListHeatmapColor(listID: UUID, colorID: String)
     func updateListStreakEnabled(listID: UUID, isEnabled: Bool)
 }

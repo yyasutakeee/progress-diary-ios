@@ -311,12 +311,19 @@ private struct TopListBoundaryFadeModifier: ViewModifier {
 private struct ListSettingsSheet<Model: DiaryViewModel>: View {
     @ObservedObject var model: Model
     let list: DiaryListItem
+    @State private var name: String = ""
 
     private let columns: [GridItem] = [GridItem(.adaptive(minimum: 64), spacing: 16)]
 
     var body: some View {
         NavigationStack {
             Form {
+                Section("Name") {
+                    TextField("List name", text: $name)
+                        .submitLabel(.done)
+                        .onSubmit { model.send(.listRenamed(name)) }
+                }
+
                 Section("Streak") {
                     Toggle("Track Streak", isOn: Binding(get: { list.isStreakEnabled }, set: { model.send(.streakTrackingChanged($0)) }))
                     Text("Track consecutive posting days for this category.")
@@ -356,6 +363,8 @@ private struct ListSettingsSheet<Model: DiaryViewModel>: View {
             }
             .navigationTitle(list.name)
             .navigationBarTitleDisplayMode(.inline)
+            .task { name = list.name }
+            .onDisappear { model.send(.listRenamed(name)) }
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {

@@ -77,6 +77,11 @@ extension AppStore {
         diaryEntryRepository.deleteList(list)
     }
 
+    // WHY: renaming goes through persistence so the new name syncs to every device sharing the list.
+    func renameList(listID: UUID, name: String) {
+        diaryEntryRepository.updateListName(listID: listID, name: name)
+    }
+
     // WHY: routes color changes through persistence so every page observes the same saved list identity.
     func updateListHeatmapColor(listID: UUID, colorID: String) {
         diaryEntryRepository.updateListHeatmapColor(listID: listID, colorID: colorID)
