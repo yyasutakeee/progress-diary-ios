@@ -196,7 +196,7 @@ public struct DiaryView<Model: DiaryViewModel>: View {
 
     private var floatingAddEntryButton: some View {
         floatingAddEntryButtonBase
-            .glassEffect(.regular, in: .circle)
+            .glassEffect(.regular.tint(heatmapColorForSelectedList.color), in: .circle)
     }
 
     private var floatingAddEntryButtonBase: some View {
@@ -208,7 +208,7 @@ public struct DiaryView<Model: DiaryViewModel>: View {
                 .frame(width: 56, height: 56)
                 .contentShape(Circle())
         }
-        .foregroundStyle(.primary)
+        .foregroundStyle(.white)
         .buttonStyle(.plain)
         .sensoryFeedback(.impact(weight: .light), trigger: addEntryHapticTrigger)
     }
