@@ -1,13 +1,13 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.2
 import PackageDescription
 
 let package = Package(
     name: "DiaryFeature",
-    platforms: [.iOS(.v17)],
+    platforms: [.iOS(.v26)],
     products: [
         .library(name: "DiaryFeature", targets: ["DiaryFeature"])
     ],
     targets: [
-        .target(name: "DiaryFeature")
+        .target(name: "DiaryFeature", swiftSettings: [.swiftLanguageMode(.v5)])
     ]
 )

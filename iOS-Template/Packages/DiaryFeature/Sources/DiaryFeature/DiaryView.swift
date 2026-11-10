@@ -194,15 +194,9 @@ public struct DiaryView<Model: DiaryViewModel>: View {
         }
     }
 
-    @ViewBuilder
     private var floatingAddEntryButton: some View {
-        if #available(iOS 26.0, *) {
-            floatingAddEntryButtonBase
-                .glassEffect(.regular, in: .circle)
-        } else {
-            floatingAddEntryButtonBase
-                .background(.ultraThinMaterial, in: Circle())
-        }
+        floatingAddEntryButtonBase
+            .glassEffect(.regular, in: .circle)
     }
 
     private var floatingAddEntryButtonBase: some View {

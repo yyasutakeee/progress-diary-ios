@@ -33,7 +33,9 @@ public struct CumulativeBarChartView: View {
     private var scrollableBars: some View {
         ScrollViewReader { scrollViewProxy in
             ScrollView(.horizontal, showsIndicators: false) {
-                barsRow
+                GlassEffectContainer {
+                    barsRow
+                }
             }
             .frame(height: chartHeight)
             .task(id: monthlyTotals.last?.id) {
@@ -59,9 +61,9 @@ public struct CumulativeBarChartView: View {
                 .monospacedDigit()
                 .lineLimit(1)
                 .fixedSize()
-            RoundedRectangle(cornerRadius: 4)
-                .fill(barColor)
+            Color.clear
                 .frame(width: barWidth, height: barHeight(for: item.total))
+                .glassEffect(.regular.tint(barColor), in: RoundedRectangle(cornerRadius: 4))
             Text(item.monthLabel)
                 .font(.caption2)
                 .foregroundStyle(.secondary)

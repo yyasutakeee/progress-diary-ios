@@ -21,7 +21,9 @@ public struct HeatmapView: View {
     public var body: some View {
         ScrollViewReader { scrollViewProxy in
             ScrollView(.horizontal, showsIndicators: false) {
-                weeksRow
+                GlassEffectContainer {
+                    weeksRow
+                }
                     .padding(.vertical, 4)
             }
             .task {
@@ -57,10 +59,8 @@ public struct HeatmapView: View {
         }
     }
 
-    @ViewBuilder
     private func dayCellShape(for date: Date?) -> some View {
-        RoundedRectangle(cornerRadius: 2)
-            .fill(dayCellColor(for: date))
+        dayCellFill(for: date)
             .frame(width: cellSize, height: cellSize)
             .overlay {
                 if let date {
@@ -78,9 +78,15 @@ public struct HeatmapView: View {
         }
     }
 
-    private func dayCellColor(for date: Date?) -> Color {
-        guard let date else { return .clear }
-        return isDayActive(date) ? activeColor : Color(.systemFill)
+    @ViewBuilder
+    private func dayCellFill(for date: Date?) -> some View {
+        if let date, isDayActive(date) {
+            Color.clear
+                .glassEffect(.regular.tint(activeColor), in: RoundedRectangle(cornerRadius: 2))
+        } else {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(date == nil ? Color.clear : Color(.systemFill))
+        }
     }
 
     private func isDayActive(_ date: Date) -> Bool {
