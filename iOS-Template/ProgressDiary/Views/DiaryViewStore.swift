@@ -183,7 +183,8 @@ final class DiaryViewStore: DiaryViewModel {
         }
     }
 
-    // WHY: the year appears only where it changes or begins, keeping narrow bar labels readable.
+    // WHY: the year appears only where it changes or begins, keeping narrow bar labels readable;
+    // months without additions carry no total so the chart leaves them empty.
     private func makeDiaryMonthlyTotalItem(from total: MonthlyCumulativeTotal, isFirst: Bool) -> DiaryMonthlyTotalItem {
         let isJanuary: Bool = Calendar.current.component(.month, from: total.monthStart) == 1
         let yearLabel: String? = (isFirst || isJanuary) ? Self.yearLabelFormatter.string(from: total.monthStart) : nil
@@ -191,7 +192,7 @@ final class DiaryViewStore: DiaryViewModel {
             id: Self.monthIDFormatter.string(from: total.monthStart),
             monthLabel: Self.monthLabelFormatter.string(from: total.monthStart),
             yearLabel: yearLabel,
-            total: total.total
+            total: total.addedCount > 0 ? total.total : nil
         )
     }
 

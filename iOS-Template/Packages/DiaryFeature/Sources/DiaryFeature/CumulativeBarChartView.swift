@@ -56,14 +56,9 @@ public struct CumulativeBarChartView: View {
 
     private func monthColumn(_ item: DiaryMonthlyTotalItem) -> some View {
         VStack(spacing: 2) {
-            Text("\(item.total)")
-                .font(.caption2.weight(.semibold))
-                .monospacedDigit()
-                .lineLimit(1)
-                .fixedSize()
-            Color.clear
-                .frame(width: barWidth, height: barHeight(for: item.total))
-                .glassEffect(.regular.tint(barColor), in: RoundedRectangle(cornerRadius: 4))
+            if let total: Int = item.total {
+                totalBar(total)
+            }
             Text(item.monthLabel)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
@@ -77,11 +72,29 @@ public struct CumulativeBarChartView: View {
         }
         .frame(minWidth: barWidth)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(item.monthLabel) \(item.yearLabel ?? ""): \(item.total) total")
+        .accessibilityLabel(accessibilityLabel(for: item))
+    }
+
+    @ViewBuilder
+    private func totalBar(_ total: Int) -> some View {
+        Text("\(total)")
+            .font(.caption2.weight(.semibold))
+            .monospacedDigit()
+            .lineLimit(1)
+            .fixedSize()
+        Color.clear
+            .frame(width: barWidth, height: barHeight(for: total))
+            .glassEffect(.regular.tint(barColor), in: RoundedRectangle(cornerRadius: 4))
+    }
+
+    private func accessibilityLabel(for item: DiaryMonthlyTotalItem) -> String {
+        let monthName: String = "\(item.monthLabel) \(item.yearLabel ?? "")"
+        guard let total: Int = item.total else { return "\(monthName): no entries added" }
+        return "\(monthName): \(total) total"
     }
 
     private func barHeight(for total: Int) -> CGFloat {
-        let largestTotal: Int = max(monthlyTotals.map { $0.total }.max() ?? 1, 1)
+        let largestTotal: Int = max(monthlyTotals.compactMap { $0.total }.max() ?? 1, 1)
         let ratio: CGFloat = CGFloat(total) / CGFloat(largestTotal)
         return max(maxBarHeight * ratio, 2)
     }

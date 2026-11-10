@@ -2,6 +2,7 @@ import Foundation
 
 struct MonthlyCumulativeTotal {
     let monthStart: Date
+    let addedCount: Int
     let total: Int
 }
 
@@ -19,8 +20,9 @@ enum MonthlyCumulativeTotalCalculator {
         var runningTotal: Int = 0
         var month: Date = firstMonth
         while month <= lastMonth {
-            runningTotal += countsByMonth[month] ?? 0
-            totals.append(MonthlyCumulativeTotal(monthStart: month, total: runningTotal))
+            let addedCount: Int = countsByMonth[month] ?? 0
+            runningTotal += addedCount
+            totals.append(MonthlyCumulativeTotal(monthStart: month, addedCount: addedCount, total: runningTotal))
             guard let nextMonth: Date = calendar.date(byAdding: .month, value: 1, to: month) else { break }
             month = nextMonth
         }
