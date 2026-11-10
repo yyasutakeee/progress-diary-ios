@@ -7,6 +7,8 @@ final class DiaryViewStore: DiaryViewModel {
     @Published private(set) var lists: [DiaryListItem] = []
     @Published private(set) var entriesByListID: [UUID: [DiaryEntryItem]] = [:]
     @Published private(set) var activeDayKeysByListID: [UUID: Set<String>] = [:]
+    @Published private(set) var monthlyTotalsByListID: [UUID: [DiaryMonthlyTotalItem]] = [:]
+    @Published private(set) var progressChartStyle: ProgressChartStyle = .heatmap
     @Published private(set) var streakByListID: [UUID: DiaryStreakItem] = [:]
     @Published private(set) var selectedListStreak: DiaryStreakItem? = nil
     @Published private(set) var selectedListID: UUID? = nil
@@ -23,6 +25,24 @@ final class DiaryViewStore: DiaryViewModel {
     private static let dayKeyFormatter: DateFormatter = {
         let f: DateFormatter = DateFormatter()
         f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
+
+    private static let monthIDFormatter: DateFormatter = {
+        let f: DateFormatter = DateFormatter()
+        f.dateFormat = "yyyy-MM"
+        return f
+    }()
+
+    private static let monthLabelFormatter: DateFormatter = {
+        let f: DateFormatter = DateFormatter()
+        f.setLocalizedDateFormatFromTemplate("MMM")
+        return f
+    }()
+
+    private static let yearLabelFormatter: DateFormatter = {
+        let f: DateFormatter = DateFormatter()
+        f.dateFormat = "yyyy"
         return f
     }()
 
@@ -76,6 +96,8 @@ final class DiaryViewStore: DiaryViewModel {
             guard let selectedListID else { return }
             deleteListMatchingID(selectedListID)
             isShowingDeleteListConfirmation = false
+        case .progressChartStyleToggled:
+            appStore.toggleProgressSummaryStyle()
         }
     }
 
@@ -93,6 +115,8 @@ final class DiaryViewStore: DiaryViewModel {
         lists = state.lists.map(makeDiaryListItem)
         entriesByListID = buildEntriesByListID(from: state.entries)
         activeDayKeysByListID = buildActiveDayKeysByListID(from: state.entries)
+        monthlyTotalsByListID = buildMonthlyTotalsByListID(from: state.entries)
+        progressChartStyle = makeProgressChartStyle(from: state.progressSummaryStyle)
         selectedListID = state.selectedListID
         currentListName = makeCurrentListName(from: state)
         streakByListID = buildStreakByListID(from: state)
@@ -147,6 +171,34 @@ final class DiaryViewStore: DiaryViewModel {
     // WHY: each heatmap needs only the dates belonging to its page, keeping list navigation and calendar state aligned.
     private func buildActiveDayKeysByListID(from entries: [DiaryEntry]) -> [UUID: Set<String>] {
         Dictionary(grouping: entries, by: { $0.listID }).mapValues { buildActiveDayKeys(from: $0) }
+    }
+
+    // WHY: each page's bar chart needs its own running total, so totals are grouped by list before accumulating.
+    private func buildMonthlyTotalsByListID(from entries: [DiaryEntry]) -> [UUID: [DiaryMonthlyTotalItem]] {
+        Dictionary(grouping: entries, by: { $0.listID }).mapValues { listEntries in
+            let totals: [MonthlyCumulativeTotal] = MonthlyCumulativeTotalCalculator.calculate(from: listEntries)
+            return totals.enumerated().map { index, total in makeDiaryMonthlyTotalItem(from: total, isFirst: index == 0) }
+        }
+    }
+
+    // WHY: the year appears only where it changes or begins, keeping narrow bar labels readable.
+    private func makeDiaryMonthlyTotalItem(from total: MonthlyCumulativeTotal, isFirst: Bool) -> DiaryMonthlyTotalItem {
+        let isJanuary: Bool = Calendar.current.component(.month, from: total.monthStart) == 1
+        let yearLabel: String? = (isFirst || isJanuary) ? Self.yearLabelFormatter.string(from: total.monthStart) : nil
+        return DiaryMonthlyTotalItem(
+            id: Self.monthIDFormatter.string(from: total.monthStart),
+            monthLabel: Self.monthLabelFormatter.string(from: total.monthStart),
+            yearLabel: yearLabel,
+            total: total.total
+        )
+    }
+
+    // WHY: maps the domain preference to the package-owned chart style so the feature never sees domain types.
+    private func makeProgressChartStyle(from style: ProgressSummaryStyle) -> ProgressChartStyle {
+        switch style {
+        case .dailyActivity: return .heatmap
+        case .monthlyCumulativeTotal: return .cumulativeBars
+        }
     }
 
     // WHY: resolves the domain entry by id before deletion so the view layer

@@ -11,7 +11,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		21F8840330322E9700E7CCE7 /* ProgressDiary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ProgressDiary.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		21F8840330322E9700E7CCE7 /* ProgressDiary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ProgressDiary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -100,13 +100,13 @@
 			);
 			mainGroup = 21F883FA30322E9700E7CCE7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CC000000000000000000001A /* XCLocalSwiftPackageReference "Packages/DiaryFeature" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 21F8840430322E9700E7CCE7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
-			packageReferences = (
-				CC000000000000000000001A /* XCLocalSwiftPackageReference "DiaryFeature" */,
-			);
 			targets = (
 				21F8840230322E9700E7CCE7 /* ProgressDiary */,
 			);
@@ -132,21 +132,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		CC000000000000000000001A /* XCLocalSwiftPackageReference "DiaryFeature" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/DiaryFeature;
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		CC000000000000000000001B /* DiaryFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CC000000000000000000001A /* XCLocalSwiftPackageReference "DiaryFeature" */;
-			productName = DiaryFeature;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
 		21F8840C30322E9800E7CCE7 /* Debug */ = {
@@ -291,7 +276,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "yasutakeapps.progressdiary";
+				PRODUCT_BUNDLE_IDENTIFIER = yasutakeapps.progressdiary;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -324,7 +309,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "yasutakeapps.progressdiary";
+				PRODUCT_BUNDLE_IDENTIFIER = yasutakeapps.progressdiary;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -358,6 +343,21 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		CC000000000000000000001A /* XCLocalSwiftPackageReference "Packages/DiaryFeature" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/DiaryFeature;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CC000000000000000000001B /* DiaryFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CC000000000000000000001A /* XCLocalSwiftPackageReference "Packages/DiaryFeature" */;
+			productName = DiaryFeature;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 21F883FB30322E9700E7CCE7 /* Project object */;
 }

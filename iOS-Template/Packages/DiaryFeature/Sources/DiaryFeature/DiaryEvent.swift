@@ -13,4 +13,5 @@ public enum DiaryEvent {
     case streakTrackingChanged(Bool)
     case deleteCurrentListRequested
     case deleteCurrentListConfirmed
+    case progressChartStyleToggled
 }

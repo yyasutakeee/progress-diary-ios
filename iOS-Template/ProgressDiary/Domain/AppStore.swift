@@ -3,12 +3,19 @@ import Foundation
 
 class AppStore: Store<AppState> {
     private let diaryEntryRepository: any DiaryEntryRepository
+    private let progressSummaryStyleRepository: any ProgressSummaryStyleRepository
     private var cancellables: Set<AnyCancellable> = Set<AnyCancellable>()
 
     // WHY: dependency injection keeps the single state owner testable while persistence remains outside the domain state.
-    init(diaryEntryRepository: some DiaryEntryRepository) {
+    init(
+        diaryEntryRepository: some DiaryEntryRepository,
+        progressSummaryStyleRepository: some ProgressSummaryStyleRepository
+    ) {
         self.diaryEntryRepository = diaryEntryRepository
-        super.init(initialState: AppState())
+        self.progressSummaryStyleRepository = progressSummaryStyleRepository
+        var initialState: AppState = AppState()
+        initialState.progressSummaryStyle = progressSummaryStyleRepository.loadStyle()
+        super.init(initialState: initialState)
         observeEntries()
         observeLists()
     }
@@ -73,6 +80,13 @@ extension AppStore {
     // WHY: routes color changes through persistence so every page observes the same saved list identity.
     func updateListHeatmapColor(listID: UUID, colorID: String) {
         diaryEntryRepository.updateListHeatmapColor(listID: listID, colorID: colorID)
+    }
+
+    // WHY: the summary style is a saved preference, so the change is persisted alongside the state update.
+    func toggleProgressSummaryStyle() {
+        let newStyle: ProgressSummaryStyle = state.progressSummaryStyle.toggled
+        setState { $0.progressSummaryStyle = newStyle }
+        progressSummaryStyleRepository.saveStyle(newStyle)
     }
 
     // WHY: routes the category-specific preference through the persistence boundary.

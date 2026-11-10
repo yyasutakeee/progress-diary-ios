@@ -60,12 +60,58 @@ public struct DiaryView<Model: DiaryViewModel>: View {
     }
 
     private var heatmapSection: some View {
-        HeatmapView(
-            activeDayKeys: activeDayKeysForSelectedList,
-            activeColor: heatmapColorForSelectedList.color
-        )
-            .padding(.horizontal)
+        HStack(alignment: .center, spacing: 4) {
+            progressChart
+                .frame(maxWidth: .infinity)
+            progressChartStyleToggleButton
+        }
+            .padding(.leading)
+            .padding(.trailing, 8)
             .padding(.vertical, 8)
+    }
+
+    @ViewBuilder
+    private var progressChart: some View {
+        switch model.progressChartStyle {
+        case .heatmap:
+            HeatmapView(
+                activeDayKeys: activeDayKeysForSelectedList,
+                activeColor: heatmapColorForSelectedList.color
+            )
+        case .cumulativeBars:
+            CumulativeBarChartView(
+                monthlyTotals: monthlyTotalsForSelectedList,
+                barColor: heatmapColorForSelectedList.color
+            )
+        }
+    }
+
+    private var progressChartStyleToggleButton: some View {
+        Button {
+            model.send(.progressChartStyleToggled)
+        } label: {
+            Image(systemName: progressChartStyleToggleIconName)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .frame(width: 36, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(progressChartStyleToggleAccessibilityLabel)
+    }
+
+    private var progressChartStyleToggleIconName: String {
+        switch model.progressChartStyle {
+        case .heatmap: return "chart.bar.fill"
+        case .cumulativeBars: return "square.grid.3x3.fill"
+        }
+    }
+
+    private var progressChartStyleToggleAccessibilityLabel: String {
+        switch model.progressChartStyle {
+        case .heatmap: return "Show cumulative monthly chart"
+        case .cumulativeBars: return "Show heatmap"
+        }
     }
 
     private var pagedEntryLists: some View {
@@ -212,6 +258,11 @@ public struct DiaryView<Model: DiaryViewModel>: View {
     private var activeDayKeysForSelectedList: Set<String> {
         guard let selectedListID = model.selectedListID else { return Set<String>() }
         return model.activeDayKeysByListID[selectedListID] ?? Set<String>()
+    }
+
+    private var monthlyTotalsForSelectedList: [DiaryMonthlyTotalItem] {
+        guard let selectedListID = model.selectedListID else { return [] }
+        return model.monthlyTotalsByListID[selectedListID] ?? []
     }
 
     private var heatmapColorForSelectedList: DiaryHeatmapColor {

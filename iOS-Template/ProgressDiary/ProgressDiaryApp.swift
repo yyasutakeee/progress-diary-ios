@@ -21,7 +21,11 @@ struct ProgressDiaryApp: App {
             modelContext: container.mainContext
         )
         self.modelContainer = container
-        _appStore = StateObject(wrappedValue: AppStore(diaryEntryRepository: repository))
+        let styleRepository: UserDefaultsProgressSummaryStyleRepository = UserDefaultsProgressSummaryStyleRepository()
+        _appStore = StateObject(wrappedValue: AppStore(
+            diaryEntryRepository: repository,
+            progressSummaryStyleRepository: styleRepository
+        ))
     }
 
     var body: some Scene {
