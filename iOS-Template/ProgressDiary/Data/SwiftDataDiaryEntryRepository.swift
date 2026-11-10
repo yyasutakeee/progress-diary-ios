@@ -144,7 +144,7 @@ final class SwiftDataDiaryEntryRepository: DiaryEntryRepository {
     // always reflects the actual persisted state rather than an in-memory mirror.
     private func loadAndPublishEntries() {
         let descriptor: FetchDescriptor<DiaryEntryRecord> = FetchDescriptor<DiaryEntryRecord>(
-            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+            sortBy: [SortDescriptor(\.createdAt, order: .forward)]
         )
         let records: [DiaryEntryRecord] = (try? modelContext.fetch(descriptor)) ?? []
         entriesSubject.send(records.map(makeDiaryEntry))

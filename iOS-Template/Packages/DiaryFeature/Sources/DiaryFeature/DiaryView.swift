@@ -131,19 +131,36 @@ public struct DiaryView<Model: DiaryViewModel>: View {
 
     private func entryList(for list: DiaryListItem) -> some View {
         let entries: [DiaryEntryItem] = model.entriesByListID[list.id] ?? []
-        return List {
-            ForEach(entries) { entry in
-                DiaryEntryRow(item: entry)
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+        return ScrollViewReader { scrollViewProxy in
+            List {
+                ForEach(entries) { entry in
+                    DiaryEntryRow(item: entry)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                        .id(entry.id)
+                }
+                .onDelete { indexSet in
+                    for index in indexSet { model.send(.deleteEntry(entries[index].id)) }
+                }
             }
-            .onDelete { indexSet in
-                for index in indexSet { model.send(.deleteEntry(entries[index].id)) }
+            .listStyle(.plain)
+            .contentMargins(.bottom, floatingButtonClearance, for: .scrollContent)
+            .modifier(TopListBoundaryFadeModifier())
+            .task(id: entries.last?.id) {
+                await scrollToLatestEntry(in: entries, using: scrollViewProxy)
             }
         }
-        .listStyle(.plain)
-        .modifier(TopListBoundaryFadeModifier())
+    }
+
+    private var floatingButtonClearance: CGFloat { 88 }
+
+    private func scrollToLatestEntry(in entries: [DiaryEntryItem], using scrollViewProxy: ScrollViewProxy) async {
+        await Task.yield()
+        guard let latestEntryID: UUID = entries.last?.id else { return }
+        withAnimation {
+            scrollViewProxy.scrollTo(latestEntryID, anchor: .bottom)
+        }
     }
 
     private var listMenu: some ToolbarContent {
